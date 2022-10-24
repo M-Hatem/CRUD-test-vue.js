@@ -1,12 +1,17 @@
 <template>
-  <div class="bg-danger">asd</div>
+  <navbar />
+  <home />
 </template>
 
-<script></script>
+<script>
+import Home from "@/views/HomeView.vue";
+import navbar from "@/components/Navbar.vue";
 
-<style>
-div {
-  /* background-color: red; */
-  height: 500px;
-}
-</style>
+export default {
+  name: "App",
+  components: {
+    Home,
+    navbar,
+  },
+};
+</script>
