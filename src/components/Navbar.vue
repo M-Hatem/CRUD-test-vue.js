@@ -6,6 +6,9 @@
           <li>
             <router-link :to="{ name: 'Home' }">Home</router-link>
           </li>
+          <li>
+            <router-link :to="{ name: 'Add' }">Add Item</router-link>
+          </li>
         </ul>
       </nav>
     </div>

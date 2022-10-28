@@ -1,6 +1,8 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 
-import Home from "../views/HomeView.vue";
+const Home = () => import("../views/HomeView.vue");
+const AddItem = () => import("../views/AddItem.vue");
+const EditItem = () => import("../views/EditItem.vue");
 
 const route = [
   {
@@ -8,10 +10,20 @@ const route = [
     name: "Home",
     component: Home,
   },
+  {
+    path: "/add-item",
+    name: "Add",
+    component: AddItem,
+  },
+  {
+    path: "/edit-item/:id",
+    name: "Edit",
+    component: EditItem,
+  },
 ];
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: route,
 });
 

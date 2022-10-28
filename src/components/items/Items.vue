@@ -1,6 +1,11 @@
 <template>
   <MDBListGroup light>
-    <SingleItem v-for="item of items" :key="item.id" :item="item" />
+    <SingleItem
+      v-for="item of items"
+      :key="item.id"
+      :item="item"
+      @getItems="getItems"
+    />
   </MDBListGroup>
 </template>
 
@@ -32,7 +37,6 @@ export default {
           data: { data: information },
         } = res;
         this.items = information;
-        console.log(this.items);
       });
     },
   },
