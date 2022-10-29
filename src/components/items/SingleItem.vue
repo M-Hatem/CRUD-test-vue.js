@@ -33,14 +33,17 @@ export default {
   props: ["item"],
   emits: ["getItems"],
   methods: {
+    // To edit an item
     editItem(id) {
       this.$router.push({ name: "Edit", params: { id: id } });
     },
 
+    // To refresh items after deletion
     refreshItems() {
       this.$emit("getItems");
     },
 
+    // To delete an item
     deleteItem(id) {
       const formData = JSON.stringify(id);
       axios

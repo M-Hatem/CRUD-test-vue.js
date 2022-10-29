@@ -4,6 +4,7 @@
       <div class="col-12 title my-5">
         <h1>Edit an Item</h1>
       </div>
+      <!-- Item form component -->
       <ItemForm />
     </div>
   </div>

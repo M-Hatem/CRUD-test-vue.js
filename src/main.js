@@ -1,5 +1,4 @@
 import { createApp } from "vue";
-import { createPinia } from "pinia";
 // Toast Plugin
 import ToastPlugin from "vue-toast-notification";
 
@@ -12,7 +11,6 @@ import "../node_modules/vue-toast-notification/dist/theme-sugar.css";
 
 const app = createApp(App);
 
-app.use(createPinia());
 app.use(router);
 app.use(ToastPlugin);
 
