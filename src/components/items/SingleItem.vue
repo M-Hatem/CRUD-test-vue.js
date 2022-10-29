@@ -2,7 +2,8 @@
   <MDBListGroupItem tag="a" href="#" ripple noBorder spacing action>
     <div class="d-flex justify-content-between align-items-center">
       <p class="m-0">
-        {{ item.arrivingEnglishName }} - {{ item.arrivingArabicName }}
+        {{ item.id }} : {{ item.arrivingEnglishName }} -
+        {{ item.arrivingArabicName }}
       </p>
       <div class="ms-auto">
         <MDBBtn color="primary me-2" rounded @click.prevent="editItem(item.id)">
@@ -35,9 +36,13 @@ export default {
     editItem(id) {
       this.$router.push({ name: "Edit", params: { id: id } });
     },
+
+    refreshItems() {
+      this.$emit("getItems");
+    },
+
     deleteItem(id) {
       const formData = JSON.stringify(id);
-
       axios
         .post(
           "http://40.127.194.127:777/api/Emergency/DeleteArrivingMethod",
@@ -52,10 +57,9 @@ export default {
             this.$toast.open({
               message: `Item Deleted Successfully!`,
               type: "success",
-              duration: 3000,
+              duration: 1500,
             });
-
-            this.getItems();
+            this.refreshItems();
           }
         });
     },

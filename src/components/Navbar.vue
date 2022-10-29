@@ -4,7 +4,7 @@
       <nav class="h-100">
         <ul class="h-100 d-flex justify-content-start align-items-center p-0">
           <li>
-            <router-link :to="{ name: 'Home' }">Home</router-link>
+            <router-link :to="{ name: 'Home' }">Items</router-link>
           </li>
           <li>
             <router-link :to="{ name: 'Add' }">Add Item</router-link>

@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="onSubmit">
+  <form @submit.prevent="id ? onEdit() : onSubmit()">
     <MDBRow class="mb-4">
       <MDBCol>
         <MDBInput type="text" label="Arabic Name" v-model="arabic" />
@@ -9,21 +9,9 @@
       </MDBCol>
     </MDBRow>
 
-    <MDBRow class="mb-4">
-      <MDBCol>
-        <MDBInput type="number" label="ID" v-model.number="id" />
-      </MDBCol>
-      <MDBCol>
-        <MDBInput type="number" label="Sort" v-model.number="sort" />
-      </MDBCol>
-    </MDBRow>
-    <MDBRow class="mb-4">
-      <MDBCol>
-        <MDBInput type="number" label="Account ID" v-model="accID" disabled />
-      </MDBCol>
-    </MDBRow>
-
-    <MDBBtn color="primary" block class="mb-4" type="submit"> Add Item </MDBBtn>
+    <MDBBtn color="primary" block class="mb-4" type="submit">
+      {{ id ? "Edit Item" : "Add Item" }}
+    </MDBBtn>
   </form>
 </template>
 
@@ -47,44 +35,99 @@ export default {
       arabic: "",
       english: "",
       id: null,
-      sort: null,
-      accID: 1,
-      addUrl:
-        "http://40.127.194.127:777/api/Emergency/AddOrUpdateArrivingMethod",
     };
   },
   methods: {
+    // To unify add or edit apis
+    edit(formData) {
+      axios
+        .post(
+          "http://40.127.194.127:777/api/Emergency/AddOrUpdateArrivingMethod",
+          formData,
+          {
+            headers: { "Content-Type": "application/json; charset=UTF-8" },
+          }
+        )
+        .then((data) => {
+          const { status } = data;
+
+          if (status === 200) {
+            this.$toast.open({
+              message: `Item added Successfully!`,
+              type: "success",
+              duration: 1500,
+            });
+            this.$router.push({ name: "Home" });
+          }
+        })
+        .catch((err) => {
+          this.$toast.open({
+            message: `${err}`,
+            type: "error",
+            duration: 1500,
+          });
+        });
+    },
+
+    // To add an item
     onSubmit() {
-      if (!this.arabic || !this.english || !this.id || !this.sort) {
+      if (!this.arabic || !this.english) {
         this.$toast.open({
           message: `You must fill all the form first!`,
           type: "error",
-          duration: 3000,
+          duration: 1500,
+        });
+        return;
+      }
+
+      const formData = JSON.stringify({
+        arrivingArabicName: this.arabic,
+        arrivingEnglishName: this.english,
+      });
+
+      this.edit(formData);
+    },
+
+    // To edit an item
+    onEdit() {
+      if (!this.arabic || !this.english) {
+        this.$toast.open({
+          message: `You must fill all the form first!`,
+          type: "error",
+          duration: 1500,
         });
         return;
       }
 
       const formData = JSON.stringify({
         id: this.id,
-        accountId: 1,
         arrivingArabicName: this.arabic,
         arrivingEnglishName: this.english,
-        sort: this.sort,
       });
 
-      axios
-        .post(this.addUrl, formData, {
-          headers: { "Content-Type": "application/json; charset=UTF-8" },
-        })
-        .then(() => {
-          this.$toast.open({
-            message: `Item added Successfully!`,
-            type: "success",
-            duration: 3000,
-          });
-        })
-        .catch((err) => console.log(err));
+      this.edit(formData);
     },
+  },
+
+  created() {
+    const id = +this.$route.params.id;
+    this.id = id;
+
+    if (id) {
+      axios
+        .get(
+          "http://40.127.194.127:777/api/Emergency/GetAllArrivingMethods?first=0&page=0&rows=10"
+        )
+        .then((data) => {
+          const {
+            data: { data: items },
+          } = data;
+          const item = items.filter((obj) => obj.id === id)[0];
+
+          this.arabic = item.arrivingArabicName;
+          this.english = item.arrivingEnglishName;
+        });
+    }
   },
 };
 </script>
