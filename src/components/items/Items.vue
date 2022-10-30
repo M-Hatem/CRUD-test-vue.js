@@ -5,10 +5,10 @@
     </div>
     <div class="d-flex justify-content-between align-items-center">
       <span>
-        Sort By:
+        <span class="fs-5 me-2">Sort By:</span>
         <span class="me-2 text-primary">ID</span>
         <Toggle v-model="isSorted" @change="sort" />
-        <span class="ms-2 text-danger">Sort Input</span>
+        <span class="ms-2 text-danger">Sort</span>
       </span>
       <div>
         <MDBBtn color="primary" class="me-3" @click.prevent="searchItem">
@@ -30,18 +30,17 @@
       v-for="item of items"
       :key="item.id"
       :item="item"
-      @getItems="paginateAfterDelete"
+      @getItems="pages ? paginateAfterDelete() : getItems()"
     />
   </MDBListGroup>
   <!-- Pagination -->
   <div class="d-flex justify-content-center mt-4">
-    <pagination
-      v-model="page"
-      :records="totalCount"
-      :per-page="perPage"
-      @paginate="paginate"
-      ref="paginator"
-    />
+    <Paginator
+      v-model:rows="rows"
+      :totalRecords="totalCount"
+      :rowsPerPageOptions="[10, 25, 50]"
+      @page="onPage($event)"
+    ></Paginator>
   </div>
 </template>
 
@@ -50,7 +49,7 @@
 import axios from "axios";
 // To import mdb in order to style the output of the API
 import { MDBListGroup, MDBBtn, MDBInput } from "mdb-vue-ui-kit";
-import Pagination from "v-pagination-3";
+import Paginator from "primevue/paginator";
 import Toggle from "@vueform/toggle";
 
 // To import single Item component
@@ -63,7 +62,7 @@ export default {
     SingleItem,
     MDBBtn,
     MDBInput,
-    Pagination,
+    Paginator,
     Toggle,
   },
   data() {
@@ -71,10 +70,9 @@ export default {
       items: [],
       search: "",
       isSorted: false,
-      page: 1,
+      rows: 10,
+      pages: null,
       totalCount: 0,
-      perPage: 10,
-      paginationInfo: {},
     };
   },
   methods: {
@@ -99,20 +97,27 @@ export default {
           // To assign total count for pagination
           this.totalCount = totalCount;
 
+          // Conditions for empty array
           if (this.items.length === 0) this.getItems();
         });
     },
 
     // To paginate between pages
-    paginate(e) {
-      const currentPage = e - 1;
-      const first = currentPage * this.perPage;
-      this.paginationInfo = { first, currentPage, perPage: this.perPage };
-      this.getItems(first, currentPage, this.perPage);
+    onPage(event) {
+      this.pages = { ...event };
+      if (!this.search) {
+        this.getItems(event.first, event.page, event.rows);
+      }
     },
 
-    // To search for an item
-    searchItem() {
+    // To save a specific page after deletion
+    paginateAfterDelete() {
+      const event = this.pages;
+      this.getItems(event.first, event.page, event.rows);
+    },
+
+    // To filter wanted items
+    filterItems() {
       axios
         .get(
           `http://40.127.194.127:777/api/Emergency/GetAllArrivingMethods?first=0&page=0&rows=10`
@@ -139,21 +144,21 @@ export default {
         });
     },
 
+    // To search for an item
+    searchItem() {
+      this.filterItems();
+    },
+
     // To reset items
     resetItems() {
-      this.$refs.paginator.setPage(1);
+      document.querySelector(".p-paginator-first").click();
       this.search = "";
       this.getItems();
     },
 
-    // To save a specific page after deletion
-    paginateAfterDelete() {
-      const { first, currentPage, perPage } = this.paginationInfo;
-      this.getItems(first, currentPage, perPage);
-    },
-
     // To sort items
     sort() {
+      document.querySelector(".p-paginator-first").click();
       if (this.isSorted)
         this.items = this.items
           .slice()
