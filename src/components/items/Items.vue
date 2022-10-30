@@ -1,12 +1,24 @@
 <template>
-  <form class="d-flex justify-content-between align-items-center mb-5">
-    <div class="me-4 w-100">
+  <form class="mb-5">
+    <div class="mb-3 w-100">
       <MDBInput label="Search" v-model="search" />
     </div>
-    <MDBBtn color="primary" class="me-3" @click.prevent="searchItem">
-      Search
-    </MDBBtn>
-    <MDBBtn color="danger" @click.prevent="resetItems">Reset</MDBBtn>
+    <div class="d-flex justify-content-between align-items-center">
+      <span>
+        Sort By:
+        <span class="me-2 text-primary">ID</span>
+        <Toggle v-model="isSorted" @change="sort" />
+        <span class="ms-2 text-danger">Sort Input</span>
+      </span>
+      <div>
+        <MDBBtn color="primary" class="me-3" @click.prevent="searchItem">
+          Search
+        </MDBBtn>
+        <MDBBtn color="danger" class="me-3" @click.prevent="resetItems">
+          Reset
+        </MDBBtn>
+      </div>
+    </div>
   </form>
   <!-- Error message block -->
   <div class="alert alert-danger" role="alert" v-if="!items?.length">
@@ -39,6 +51,7 @@ import axios from "axios";
 // To import mdb in order to style the output of the API
 import { MDBListGroup, MDBBtn, MDBInput } from "mdb-vue-ui-kit";
 import Pagination from "v-pagination-3";
+import Toggle from "@vueform/toggle";
 
 // To import single Item component
 import SingleItem from "@/components/items/SingleItem.vue";
@@ -51,11 +64,13 @@ export default {
     MDBBtn,
     MDBInput,
     Pagination,
+    Toggle,
   },
   data() {
     return {
       items: [],
       search: "",
+      isSorted: false,
       page: 1,
       totalCount: 0,
       perPage: 10,
@@ -73,7 +88,15 @@ export default {
           const {
             data: { data: information, totalCount },
           } = res;
-          this.items = information;
+
+          // For sorting
+          if (this.isSorted)
+            this.items = information
+              .slice()
+              .sort((a, b) => (a.sort > b.sort ? 1 : -1));
+          else this.items = information;
+
+          // To assign total count for pagination
           this.totalCount = totalCount;
 
           if (this.items.length === 0) this.getItems();
@@ -104,7 +127,14 @@ export default {
               .toLocaleUpperCase()
               .includes(this.search.toLocaleUpperCase())
           );
-          this.items = items;
+          // For sorting
+          if (this.isSorted)
+            this.items = items
+              .slice()
+              .sort((a, b) => (a.sort > b.sort ? 1 : -1));
+          else this.items = items;
+
+          // To assign total count for pagination
           this.totalCount = items.length;
         });
     },
@@ -121,6 +151,15 @@ export default {
       const { first, currentPage, perPage } = this.paginationInfo;
       this.getItems(first, currentPage, perPage);
     },
+
+    // To sort items
+    sort() {
+      if (this.isSorted)
+        this.items = this.items
+          .slice()
+          .sort((a, b) => (a.sort > b.sort ? 1 : -1));
+      else this.getItems();
+    },
   },
   created() {
     // To call items after component initializaion
@@ -128,3 +167,5 @@ export default {
   },
 };
 </script>
+
+<style src="@vueform/toggle/themes/default.css"></style>

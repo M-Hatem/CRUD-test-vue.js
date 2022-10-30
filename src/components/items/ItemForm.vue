@@ -9,6 +9,12 @@
       </MDBCol>
     </MDBRow>
 
+    <MDBRow class="mb-4">
+      <MDBCol>
+        <MDBInput type="number" label="Sort Number" v-model.number="sort" />
+      </MDBCol>
+    </MDBRow>
+
     <MDBBtn color="primary" block class="mb-4" type="submit">
       {{ id ? "Edit Item" : "Add Item" }}
     </MDBBtn>
@@ -37,6 +43,7 @@ export default {
     return {
       arabic: "",
       english: "",
+      sort: null,
       id: null,
     };
   },
@@ -78,7 +85,7 @@ export default {
 
     // To add an item
     onSubmit() {
-      if (!this.arabic || !this.english) {
+      if (!this.arabic || !this.english || !this.sort) {
         Swal.fire({
           position: "center",
           icon: "error",
@@ -89,6 +96,8 @@ export default {
       }
 
       const formData = JSON.stringify({
+        sort: this.sort,
+        accountId: 1,
         arrivingArabicName: this.arabic,
         arrivingEnglishName: this.english,
       });
@@ -98,7 +107,7 @@ export default {
 
     // To edit an item
     onEdit() {
-      if (!this.arabic || !this.english) {
+      if (!this.arabic || !this.english || !this.sort) {
         Swal.fire({
           position: "center",
           icon: "error",
@@ -110,6 +119,7 @@ export default {
 
       const formData = JSON.stringify({
         id: this.id,
+        sort: this.sort,
         arrivingArabicName: this.arabic,
         arrivingEnglishName: this.english,
       });
@@ -133,6 +143,7 @@ export default {
           } = data;
           const item = items.filter((obj) => obj.id === id)[0];
 
+          this.sort = item.sort;
           this.arabic = item.arrivingArabicName;
           this.english = item.arrivingEnglishName;
         });

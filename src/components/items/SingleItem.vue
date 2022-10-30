@@ -48,28 +48,34 @@ export default {
 
     // To delete an item
     deleteItem(id) {
-      const formData = JSON.stringify(id);
-      axios
-        .post(
-          "http://40.127.194.127:777/api/Emergency/DeleteArrivingMethod",
-          formData,
-          {
-            headers: { "Content-Type": "application/json; charset=UTF-8" },
-          }
-        )
-        .then((data) => {
-          const { status } = data;
-          if (status === 200) {
-            Swal.fire({
-              position: "center",
-              icon: "success",
-              title: "Item Deleted Successfully!",
-              showConfirmButton: false,
-              timer: 1500,
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const formData = JSON.stringify(id);
+          axios
+            .post(
+              "http://40.127.194.127:777/api/Emergency/DeleteArrivingMethod",
+              formData,
+              {
+                headers: { "Content-Type": "application/json; charset=UTF-8" },
+              }
+            )
+            .then((data) => {
+              const { status } = data;
+              if (status === 200) {
+                Swal.fire("Deleted!", "Your file has been deleted.", "success");
+                this.refreshItems();
+              }
             });
-            this.refreshItems();
-          }
-        });
+        }
+      });
     },
   },
 };
