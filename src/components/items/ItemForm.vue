@@ -19,6 +19,9 @@
 // To import axios
 import axios from "axios";
 
+// To import sweetalert
+import Swal from "sweetalert2";
+
 // To import style from MDB
 import { MDBInput, MDBBtn, MDBRow, MDBCol } from "mdb-vue-ui-kit";
 
@@ -52,19 +55,23 @@ export default {
           const { status } = data;
 
           if (status === 200) {
-            this.$toast.open({
-              message: `Item added Successfully!`,
-              type: "success",
-              duration: 1500,
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "Item added Successfully!",
+              showConfirmButton: false,
+              timer: 1500,
             });
             this.$router.push({ name: "Home" });
           }
         })
         .catch((err) => {
-          this.$toast.open({
-            message: `${err}`,
-            type: "error",
-            duration: 1500,
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: `${err}`,
+            showConfirmButton: true,
+            timer: 1500,
           });
         });
     },
@@ -72,10 +79,11 @@ export default {
     // To add an item
     onSubmit() {
       if (!this.arabic || !this.english) {
-        this.$toast.open({
-          message: `You must fill all the form first!`,
-          type: "error",
-          duration: 1500,
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: `You must fill all the form first!`,
+          showConfirmButton: true,
         });
         return;
       }
@@ -91,10 +99,11 @@ export default {
     // To edit an item
     onEdit() {
       if (!this.arabic || !this.english) {
-        this.$toast.open({
-          message: `You must fill all the form first!`,
-          type: "error",
-          duration: 1500,
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: `You must fill all the form first!`,
+          showConfirmButton: true,
         });
         return;
       }

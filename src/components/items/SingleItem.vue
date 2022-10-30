@@ -18,8 +18,11 @@
 </template>
 
 <script>
-// To axios
+// To import axios
 import axios from "axios";
+
+// To import sweetalert
+import Swal from "sweetalert2";
 
 // To import mdb in order to style the output of the API
 import { MDBListGroupItem, MDBBtn } from "mdb-vue-ui-kit";
@@ -57,10 +60,12 @@ export default {
         .then((data) => {
           const { status } = data;
           if (status === 200) {
-            this.$toast.open({
-              message: `Item Deleted Successfully!`,
-              type: "success",
-              duration: 1500,
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "Item Deleted Successfully!",
+              showConfirmButton: false,
+              timer: 1500,
             });
             this.refreshItems();
           }
