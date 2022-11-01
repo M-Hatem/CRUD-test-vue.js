@@ -146,6 +146,7 @@ export default {
 
     // To search for an item
     searchItem() {
+      if (!this.search) return;
       this.filterItems();
     },
 
@@ -153,17 +154,25 @@ export default {
     resetItems() {
       document.querySelector(".p-paginator-first").click();
       this.search = "";
-      this.getItems();
+      this.getItems(this.pages.first, this.pages.page, this.pages.rows);
+      this.isSorted = false;
     },
 
     // To sort items
     sort() {
+      if (this.search) {
+        return;
+      }
       document.querySelector(".p-paginator-first").click();
       if (this.isSorted)
         this.items = this.items
           .slice()
           .sort((a, b) => (a.sort > b.sort ? 1 : -1));
-      else this.getItems();
+      else {
+        if (this.pages)
+          this.getItems(this.pages.first, this.pages.page, this.pages.rows);
+        else this.getItems();
+      }
     },
   },
   created() {

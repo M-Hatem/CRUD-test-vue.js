@@ -56,7 +56,7 @@
           <MDBBtn
             color="danger"
             block
-            class="m-0"
+            class="m-0 ms-4"
             type="button"
             @click="goBack"
           >
@@ -103,7 +103,19 @@ export default {
     };
   },
   methods: {
+    // For Form Submission
     onSubmit(formData) {
+      if (this.id) {
+        const id = this.id;
+        const newFormData = { id, ...formData };
+        this.sendData(newFormData);
+      } else {
+        this.sendData(formData);
+      }
+    },
+
+    // For handeling data for submission
+    sendData(formData) {
       axios
         .post(
           "http://40.127.194.127:777/api/Emergency/AddOrUpdateArrivingMethod",
@@ -135,6 +147,8 @@ export default {
           });
         });
     },
+
+    // To go back and cancel editing or adding
     goBack() {
       this.$router.back(1);
     },

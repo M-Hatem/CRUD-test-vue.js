@@ -2,8 +2,11 @@
   <MDBListGroupItem tag="a" href="#" ripple noBorder spacing action>
     <div class="d-flex justify-content-between align-items-center">
       <p class="m-0">
-        {{ item.id }} : {{ item.arrivingEnglishName }} -
-        {{ item.arrivingArabicName }}
+        ID :<span class="badge badge-pill badge-primary">{{ item.id }}</span>
+        English Name :
+        <span class="fw-bold text-danger">{{ item.arrivingEnglishName }}</span>
+        - Arabic Name :
+        <span class="fw-bold text-danger">{{ item.arrivingArabicName }}</span>
       </p>
       <div class="ms-auto">
         <MDBBtn color="primary me-2" rounded @click.prevent="editItem(item.id)">
