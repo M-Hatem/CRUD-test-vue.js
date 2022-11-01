@@ -1,24 +1,71 @@
 <template>
-  <form @submit.prevent="id ? onEdit() : onSubmit()">
+  <VeeForm
+    :validation-schema="schema"
+    @submit="onSubmit"
+    :initial-values="itemData"
+  >
     <MDBRow class="mb-4">
+      <!-- Arabic Name -->
       <MDBCol>
-        <MDBInput type="text" label="Arabic Name" v-model="arabic" />
+        <label for="arabic-name">Arabic Name</label>
+        <VeeField
+          id="arabic-name"
+          type="text"
+          name="arrivingArabicName"
+          class="form-control"
+          placeholder="Arabic Name"
+        />
+        <error-message class="text-danger d-block" name="arrivingArabicName" />
       </MDBCol>
+      <!-- English Name -->
       <MDBCol>
-        <MDBInput type="text" label="English Name" v-model="english" />
+        <label for="english-name">English Name</label>
+        <VeeField
+          id="english-name"
+          type="text"
+          name="arrivingEnglishName"
+          class="form-control"
+          placeholder="English Name"
+        />
+        <error-message class="text-danger d-block" name="arrivingEnglishName" />
       </MDBCol>
     </MDBRow>
 
     <MDBRow class="mb-4">
+      <!-- Sort Number -->
       <MDBCol>
-        <MDBInput type="number" label="Sort Number" v-model.number="sort" />
+        <label for="sort-number">Sort Number</label>
+        <VeeField
+          id="sort-number"
+          type="number"
+          label="Sort Number"
+          name="sort"
+          class="form-control"
+          placeholder="Sort Number"
+        />
+        <error-message class="text-danger d-block" name="sort" />
       </MDBCol>
     </MDBRow>
 
-    <MDBBtn color="primary" block class="mb-4" type="submit">
-      {{ id ? "Edit Item" : "Add Item" }}
-    </MDBBtn>
-  </form>
+    <MDBRow>
+      <MDBCol>
+        <div class="d-flex">
+          <MDBBtn color="primary" block type="submit">
+            {{ id ? "Edit Item" : "Add Item" }}
+          </MDBBtn>
+          <MDBBtn
+            color="danger"
+            block
+            class="m-0"
+            type="button"
+            @click="goBack"
+          >
+            Cancel
+          </MDBBtn>
+        </div>
+      </MDBCol>
+    </MDBRow>
+  </VeeForm>
 </template>
 
 <script>
@@ -41,15 +88,22 @@ export default {
   },
   data() {
     return {
-      arabic: "",
-      english: "",
-      sort: null,
+      schema: {
+        arrivingArabicName: "required|min:3|max:100|alpha_spaces",
+        arrivingEnglishName: "required|min:3|max:100|alpha_spaces",
+        sort: "required|min_value:0|max_value:9999",
+      },
       id: null,
+      item: null,
+      itemData: {
+        arrivingArabicName: "",
+        arrivingEnglishName: "",
+        sort: "",
+      },
     };
   },
   methods: {
-    // To unify add or edit apis
-    edit(formData) {
+    onSubmit(formData) {
       axios
         .post(
           "http://40.127.194.127:777/api/Emergency/AddOrUpdateArrivingMethod",
@@ -60,7 +114,6 @@ export default {
         )
         .then((data) => {
           const { status } = data;
-
           if (status === 200) {
             Swal.fire({
               position: "center",
@@ -82,49 +135,8 @@ export default {
           });
         });
     },
-
-    // To add an item
-    onSubmit() {
-      if (!this.arabic || !this.english || !this.sort) {
-        Swal.fire({
-          position: "center",
-          icon: "error",
-          title: `You must fill all the form first!`,
-          showConfirmButton: true,
-        });
-        return;
-      }
-
-      const formData = JSON.stringify({
-        sort: this.sort,
-        accountId: 1,
-        arrivingArabicName: this.arabic,
-        arrivingEnglishName: this.english,
-      });
-
-      this.edit(formData);
-    },
-
-    // To edit an item
-    onEdit() {
-      if (!this.arabic || !this.english || !this.sort) {
-        Swal.fire({
-          position: "center",
-          icon: "error",
-          title: `You must fill all the form first!`,
-          showConfirmButton: true,
-        });
-        return;
-      }
-
-      const formData = JSON.stringify({
-        id: this.id,
-        sort: this.sort,
-        arrivingArabicName: this.arabic,
-        arrivingEnglishName: this.english,
-      });
-
-      this.edit(formData);
+    goBack() {
+      this.$router.back(1);
     },
   },
 
@@ -135,17 +147,17 @@ export default {
     if (id) {
       axios
         .get(
-          "http://40.127.194.127:777/api/Emergency/GetAllArrivingMethods?first=0&page=0&rows=10"
+          `http://40.127.194.127:777/api/Emergency/GetArrivingMethodById?id=${id}`
         )
         .then((data) => {
           const {
-            data: { data: items },
+            data: { data: item },
           } = data;
-          const item = items.filter((obj) => obj.id === id)[0];
+          this.item = item;
 
-          this.sort = item.sort;
-          this.arabic = item.arrivingArabicName;
-          this.english = item.arrivingEnglishName;
+          this.itemData.arrivingArabicName = item.arrivingArabicName;
+          this.itemData.arrivingEnglishName = item.arrivingEnglishName;
+          this.itemData.sort = item.sort;
         });
     }
   },

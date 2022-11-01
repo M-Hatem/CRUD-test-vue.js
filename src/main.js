@@ -3,6 +3,8 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import PrimeVue from "primevue/config";
+// For From Validation
+import VeeValidationPlugin from "./includes/validation";
 
 import "../node_modules/primeicons/primeicons.css";
 import "../node_modules/primevue/resources/primevue.min.css";
@@ -14,5 +16,6 @@ const app = createApp(App);
 
 app.use(router);
 app.use(PrimeVue);
+app.use(VeeValidationPlugin);
 
 app.mount("#app");
